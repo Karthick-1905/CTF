@@ -9,6 +9,7 @@ import QuestionList from '../components/questions/QuestionList';
 import { useOutletContext } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useQuery,useMutation,useQueryClient } from '@tanstack/react-query';
+import { safeJsonParse } from '../utils/customFetch';
 import {
   setCategories,
   setAnsweredQuestions,
@@ -30,7 +31,7 @@ const fetchInitialData = async () => {
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include'
   });
-  const result = await response.json();
+  const result = await safeJsonParse(response);
   if (result.success) {
     let cats = result.data.categories
       ? (Array.isArray(result.data.categories)
@@ -42,7 +43,7 @@ const fetchInitialData = async () => {
       }
     return { categories: cats, solved: result.data.solved || {} };
   } else {
-    throw new Error(result.message);
+    throw new Error(result.message || 'Failed to fetch initial data');
   }
 };
 
@@ -53,11 +54,11 @@ const fetchCategoryQuestions = async (categoryId) => {
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include'
   });
-  const result = await response.json();
+  const result = await safeJsonParse(response);
   if (result.success) {
     return result.data;
   } else {
-    throw new Error(result.message);
+    throw new Error(result.message || 'Failed to fetch questions');
   }
 };
 
@@ -71,7 +72,7 @@ const submitAnswer = async ({ questionId, answer }) => {
       answer: answer,
     }),
   });
-  const result = await response.json();
+  const result = await safeJsonParse(response);
   return result;
 };
 

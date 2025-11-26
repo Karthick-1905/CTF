@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Shield, AlertTriangle } from 'lucide-react';
+import { safeJsonParse } from '../../utils/customFetch';
 
 const CreateQuestion = () => {
   const [formData, setFormData] = useState({
@@ -27,7 +28,7 @@ const CreateQuestion = () => {
         body: JSON.stringify(formData),
         credentials: 'include'
       });
-      const result = await response.json();
+      const result = await safeJsonParse(response);
       if (result.success) {
         alert(result.message || "Question created successfully!");
         setFormData({

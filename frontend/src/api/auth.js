@@ -46,7 +46,12 @@ export const logout = async () => {
       method:'POST',
       credentials:'include'
     });
-    const {data,message,success} = await response.json()
+    const text = await response.text();
+    if (!text || text.trim() === '') {
+      // Logout successful but empty response
+      return null;
+    }
+    const {data, message, success} = JSON.parse(text);
     if(!success) throw new Error(message);
     return data;
   } catch (error) {

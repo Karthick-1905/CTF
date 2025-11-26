@@ -3,13 +3,14 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Database, Trash2, AlertCircle } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedQuestion, setShowDetails, resetSelectedQuestion } from '../../redux/slices/adminQuestionSlice';
+import { safeJsonParse } from '../../utils/customFetch';
 
 const fetchQuestions = async () => {
   const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/Admin/questions`, {
     method: 'GET', 
     credentials: 'include' 
   });
-  const json = await response.json();
+  const json = await safeJsonParse(response);
   if (!json.success) {
     throw new Error(json.message || 'Error fetching questions');
   }
@@ -39,7 +40,7 @@ const ViewQuestions = () => {
         method: 'DELETE', 
         credentials: 'include' 
       });
-      const result = await response.json();
+      const result = await safeJsonParse(response);
       if (result.success) {
         // Invalidate the query to refetch updated questions
         queryClient.invalidateQueries(['adminQuestions']);
